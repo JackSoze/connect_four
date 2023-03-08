@@ -21,12 +21,18 @@ describe Connect_four do
                ["X", "X", "O", " ", " ", " ", " "],
                ["O", "O", "O", "X", " ", " ", " "],
                ["X", "X", "O", "X", " ", " ", " "]]
-      expected = ["X| | | | | | ",                                                     
-                  "O| | | | | | ",                                                     
-                  "X|O| | | | | ",                                                     
-                  "X|X|O| | | | ",                                                     
-                  "O|O|O|X| | | ",                                                     
-                  "X|X|O|X| | | "]
+               expected = <<~BOARD.strip
+               | X |   |   |   |   |   |   |
+               | O |   |   |   |   |   |   |
+               | X | O |   |   |   |   |   |
+               | X | X | O |   |   |   |   |
+               | O | O | O | X |   |   |   |
+               | X | X | O | X |   |   |   |
+                -----------------------------
+                 0   1   2   3   4   5   6
+               BOARD
+                       
+               
       result = game.display_board(board)
       expect(result).to eq(expected)
     end
@@ -35,15 +41,17 @@ describe Connect_four do
   describe '#column_choose' do
     subject(:game){described_class.new}
     it 'returns a number between 1-7' do
+      player = 'x'
       allow(game).to receive(:gets).and_return('3')
-      result = game.column_choose
+      result = game.column_choose(player)
       expect(result).to eq(3)
     end
     it 'prints error message twice if wrong input twice' do
-      allow(game).to receive(:puts).with('enter a number')
+      player = 'x'
+      allow(game).to receive(:puts).with("player with #{player} enter a number")
       allow(game).to receive(:gets).and_return('8','9','3')
       expect(game).to receive(:puts).with('wrong input, input another').twice
-      game.column_choose
+      game.column_choose(player)
     end
   end
   
@@ -55,7 +63,7 @@ describe Connect_four do
       end
       it 'returns valid input' do
         input = 3
-        game.board[0][input] = ' '
+        game.board[0][input] = ''
         expect(game.validate_input(input)).to eq(3)
       end
     end
@@ -80,20 +88,15 @@ describe Connect_four do
     context 'when a piece is placed in an empty board' do
       it 'it drops to the lowermost row' do
         player = 'x'
-        board = [[" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "]]
-        expected_board = [[" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "]]
+        board = Array.new(6){Array.new(7, '')}
+        expected_board = [["", "", "", "", "", "", ""],
+                          ["", "", "", "", "", "", ""],
+                          ["", "", "", "", "", "", ""],
+                          ["", "", "", "", "", "", ""],
+                          ["", "", "", "", "", "", ""],
+                          ["", "", "x", "", "", "", ""]]
+      
+       
         game.update_board(board, 2, player)
         
         expect(board).to eq(expected_board)
@@ -102,21 +105,18 @@ describe Connect_four do
     context 'when a piece is placed in an column thats not empty' do
       it 'it fills the space above the filled position' do
         player = 'x'
-        board = [[" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " "]]
-        
-        expected_board = [[" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", " ", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "]]
+        board = [["", "", "", "", "", "", ""],
+                 ["", "", "", "", "", "", ""],
+                 ["", "", "", "", "", "", ""],
+                 ["", "", "", "", "", "", ""],
+                 ["", "", "", "", "", "", ""],
+                 ["", "", "x", "", "", "", ""]]
+        expected_board = [["", "", "", "", "", "", ""],
+                          ["", "", "", "", "", "", ""],
+                          ["", "", "", "", "", "", ""],
+                          ["", "", "", "", "", "", ""],
+                          ["", "", "x", "", "", "", ""],
+                          ["", "", "x", "", "", "", ""]]
         
         game.update_board(board, 2, player)
         
@@ -126,22 +126,19 @@ describe Connect_four do
     context 'when the column is full' do
       it "the board doesn't get updated" do
         player = 'x'
-        board = [[" ", " ", "o", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " "]]
+        board = [["", "", "o", "", "", "", ""],
+                 ["", "", "x", "", "", "", ""],
+                 ["", "", "x", "", "", "", ""],
+                 ["", "", "x", "", "", "", ""],
+                 ["", "", "x", "", "", "", ""],
+                 ["", "", "x", "", "", "", ""]]
         
-        expected_board = [[" ", " ", "o", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "],
-                          [" ", " ", "x", " ", " ", " "]]
-        
+        expected_board = [["", "", "o", "", "", "", ""],
+                          ["", "", "x", "", "", "", ""],
+                          ["", "", "x", "", "", "", ""],
+                          ["", "", "x", "", "", "", ""],
+                          ["", "", "x", "", "", "", ""],
+                          ["", "", "x", "", "", "", ""]]
         game.update_board(board, 2, player)
         expect(board).to eq(expected_board)
       end
@@ -153,12 +150,12 @@ describe Connect_four do
     context 'when there are four vertical' do
       it 'returns there is a win' do
         player = 'x'
-        board =   [[" ", " ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " ", " "]]
+        board = [["", "", "", "", "", "", ""],
+                 ["", "", "", "", "", "", ""],
+                 ["", "", "x", "", "", "", ""],
+                 ["", "", "x", "x", "x", "", "x"],
+                 ["", "", "x", "", "", "", ""],
+                 ["", "", "x", "", "", "", ""]] 
         result = game.check_for_win(board, player)
         expect(result).to eq(true)
       end
@@ -167,12 +164,12 @@ describe Connect_four do
     context 'when there is a four horizontal wins' do
       it 'returns a win' do
         player = 'x'
-        board =   [[" ", " ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", " ", " ", " ", " "],
-                   [" ", " ", " ", "x", "x", "x", "x"],
-                   [" ", " ", "x", " ", " ", " ", " "],
-                   [" ", " ", "x", " ", " ", " ", " "]]
+        board =  [["", "", "", "", "", "", ""],
+                  ["", "", "", "", "", "", ""],
+                  ["", "", "", "", "", "", ""],
+                  ["", "", "", "x", "x", "x", "x"],
+                  ["", "", "x", "", "", "", ""],
+                  ["", "", "x", "", "", "", ""]] 
         result = game.check_for_win(board, player)
         expect(result).to eq(true)
       end

@@ -14,15 +14,27 @@ class Connect_four
   def display_board(board)
     board_display_array = []
     board.each do |row|
-      board_display_array.push(row.join('|'))
+      row_display = ''
+      row.each do |cell|
+        if cell.empty?
+          row_display += "|   "
+        else
+          row_display += "| #{cell} "
+        end
+      end
+      board_display_array.push(row_display + '|')
     end
-    puts board_display_array
-    board_display_array
+    board_display_array.push(' ' + '-' * 29)
+    board_display_array.push('  0   1   2   3   4   5   6')
+    board_display_string = board_display_array.join("\n")
+    puts board_display_string
+    board_display_string
   end
-
-  def column_choose
+  
+  
+  def column_choose(player)
     loop do
-      puts 'enter a number'
+      puts "player with #{player} enter a number"
       number_chosen = gets.chomp.to_i
       validated_input = validate_input(number_chosen)
       return validated_input unless validated_input.nil?
@@ -63,15 +75,15 @@ class Connect_four
   end
 
   def check_horizontal_win(board, player)
-    6.times do |row|
-      4.times do |col|
-        if board[row][col] == player && board[row][col + 1] == player && board[row][col + 2] == player && board[row][col + 3] == player
-          return true
-        end
+  6.times do |row|
+    4.times do |col|
+      if board[row][col] == player && !board[row][col + 1].nil? && board[row][col + 1] == player && !board[row][col + 2].nil? && board[row][col + 2] == player && !board[row][col + 3].nil? && board[row][col + 3] == player
+        return true
       end
     end
-    false
   end
+  false
+end
 
   def check_diagonal_win(board, player)
     (0..2).each do |row|
@@ -114,7 +126,7 @@ class Connect_four
     current_player = 'x'
     loop do
       display_board(board)
-      column = column_choose
+      column = column_choose(current_player)
       update_board(board, column, current_player)
       if check_for_win(board, current_player)
         puts "#{current_player} wins!"
@@ -129,7 +141,7 @@ class Connect_four
   end
 end
 
-driver code
+# driver code
 
-game = Connect_four.new
-game.game_play
+# game = Connect_four.new
+# game.game_play

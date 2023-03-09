@@ -25,17 +25,17 @@ class Connect_four
     print "whoever chose #{result} will be #{result == 'heads' ? 'x and go first' : 'o and go second'}"
     result
   end
-  
+
   def display_board(board)
     board_display_array = []
     board.each do |row|
       row_display = ''
       row.each do |cell|
-        if cell.empty?
-          row_display += "|   "
-        else
-          row_display += "| #{cell} "
-        end
+        row_display += if cell.empty?
+                         '|   '
+                       else
+                         "| #{cell} "
+                       end
       end
       board_display_array.push(row_display + '|')
     end
@@ -45,8 +45,7 @@ class Connect_four
     puts board_display_string
     board_display_string
   end
-  
-  
+
   def column_choose(player)
     loop do
       puts "player with #{player} enter a number"
@@ -90,42 +89,42 @@ class Connect_four
   end
 
   def check_horizontal_win(board, player)
-  6.times do |row|
-    4.times do |col|
-      if board[row][col] == player && !board[row][col + 1].nil? && board[row][col + 1] == player && !board[row][col + 2].nil? && board[row][col + 2] == player && !board[row][col + 3].nil? && board[row][col + 3] == player
-        return true
+    6.times do |row|
+      4.times do |col|
+        if board[row][col] == player && !board[row][col + 1].nil? && board[row][col + 1] == player && !board[row][col + 2].nil? && board[row][col + 2] == player && !board[row][col + 3].nil? && board[row][col + 3] == player
+          return true
+        end
       end
     end
+    false
   end
-  false
-end
 
   def check_diagonal_win(board, player)
-    (0..2).each do |row|
-      (0..3).each do |col|
+    3.times do |row|
+      4.times do |col|
         if board[row][col] == player &&
-           board[row+1][col+1] == player &&
-           board[row+2][col+2] == player &&
-           board[row+3][col+3] == player
+           board[row + 1][col + 1] == player &&
+           board[row + 2][col + 2] == player &&
+           board[row + 3][col + 3] == player
           return true
         end
       end
     end
-  
+
     # Check for diagonal win from top left to bottom right
     (3..5).each do |row|
-      (0..3).each do |col|
+      4.times do |col|
         if board[row][col] == player &&
-           board[row-1][col+1] == player &&
-           board[row-2][col+2] == player &&
-           board[row-3][col+3] == player
+           board[row - 1][col + 1] == player &&
+           board[row - 2][col + 2] == player &&
+           board[row - 3][col + 3] == player
           return true
         end
       end
     end
-  
+
     # No diagonal win found
-    return false
+    false
   end
 
   def board_full?(board)

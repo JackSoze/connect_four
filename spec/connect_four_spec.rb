@@ -1,5 +1,28 @@
 require './lib/connect_four'
-
+RSpec.describe HelperMethods do
+  class TestClass
+    include HelperMethods
+  end
+  
+  describe TestClass do
+    let(:instance){TestClass.new}
+    describe '#coin_toss' do
+      it 'returns either "heads" or "tails"' do
+        expect(instance.coin_toss).to satisfy { |result| result == 'heads' || result == 'tails' }
+      end
+      
+      it 'returns "heads" or "tails" with approximately equal probability' do
+        results = []
+        200.times do
+          results << instance.coin_toss
+        end
+        num_heads = results.count('heads')
+        num_tails = results.count('tails')
+        expect(num_heads).to be_within(50).of(num_tails) # allow for up to 5% difference in distribution
+      end
+    end
+  end
+  end
 
 describe Connect_four do
   describe '#initialize_board' do
@@ -8,6 +31,24 @@ describe Connect_four do
       expected_board = Array.new(6) { Array.new(7, '') }
       result = game.initialize_board
       expect(result).to eq(expected_board)
+    end
+  end
+
+  describe '#player_sign_determination' do
+    subject(:game){described_class.new()}
+    before do
+      allow(game).to receive(:puts)
+      allow(game).to receive(:sleep)
+    end
+    it 'assigns x to player who selects heads' do
+      allow(game).to receive(:coin_toss).and_return('heads')
+      result = game.player_sign_determination
+      expect(result).to eq('heads')
+    end
+    it 'assigns o to player who selects tails' do
+      allow(game).to receive(:coin_toss).and_return('tails')
+      result = game.player_sign_determination
+      expect(result).to eq('tails')
     end
   end
 

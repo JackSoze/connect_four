@@ -1,6 +1,11 @@
-
+module HelperMethods
+  def coin_toss
+    rand(2) == 0 ? 'heads' : 'tails'
+  end
+end
 
 class Connect_four
+  include HelperMethods
   attr_accessor :board
 
   def initialize
@@ -11,7 +16,18 @@ class Connect_four
     Array.new(6) { Array.new(7, '') }
   end
 
+  def player_sign_determination
+    puts 'Tossing a coin...'
+    sleep 2
+    puts 'Decide who is tails or heads'
+    sleep 5
+    result = coin_toss
+    puts "whoever chose #{result} will be #{result == 'heads' ? 'x and go first' : 'o and go second'}"
+    result
+  end
+  
   def display_board(board)
+    # TODO: very smelly method, make it smell less
     board_display_array = []
     board.each do |row|
       row_display = ''
@@ -123,15 +139,18 @@ end
   end
 
   def game_play
+    player_sign_determination
     current_player = 'x'
     loop do
       display_board(board)
       column = column_choose(current_player)
       update_board(board, column, current_player)
       if check_for_win(board, current_player)
+        display_board(board)
         puts "#{current_player} wins!"
         break
       elsif board_full?(board)
+        display_board(board)
         puts 'Tie game!'
         break
       else
